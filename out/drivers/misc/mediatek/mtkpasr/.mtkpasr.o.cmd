@@ -1,0 +1,1 @@
+cmd_drivers/misc/mediatek/mtkpasr/mtkpasr.o := /usr/src/android/ubertc/bin/aarch64-linux-android-ld -EL    -r -o drivers/misc/mediatek/mtkpasr/mtkpasr.o drivers/misc/mediatek/mtkpasr/mtkpasr_preinit.o drivers/misc/mediatek/mtkpasr/mtkpasr_drv.o drivers/misc/mediatek/mtkpasr/mtkpasr_sysfs.o 

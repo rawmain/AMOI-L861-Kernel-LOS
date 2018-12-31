@@ -1,0 +1,1 @@
+cmd_drivers/misc/mediatek/hibcore/built-in.o :=  /usr/src/android/ubertc/bin/aarch64-linux-android-ld -EL    -r -o drivers/misc/mediatek/hibcore/built-in.o drivers/misc/mediatek/hibcore/mtk_hibernate_dpm.o drivers/misc/mediatek/hibcore/mtk_hibernate_core.o 

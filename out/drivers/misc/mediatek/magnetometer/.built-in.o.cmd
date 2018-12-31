@@ -1,0 +1,1 @@
+cmd_drivers/misc/mediatek/magnetometer/built-in.o :=  /usr/src/android/ubertc/bin/aarch64-linux-android-ld -EL    -r -o drivers/misc/mediatek/magnetometer/built-in.o drivers/misc/mediatek/magnetometer/mag.o drivers/misc/mediatek/magnetometer/mag_factory.o drivers/misc/mediatek/magnetometer/akm09911_new_61/built-in.o 

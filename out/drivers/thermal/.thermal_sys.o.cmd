@@ -1,0 +1,1 @@
+cmd_drivers/thermal/thermal_sys.o := /usr/src/android/ubertc/bin/aarch64-linux-android-ld -EL    -r -o drivers/thermal/thermal_sys.o drivers/thermal/thermal_core.o drivers/thermal/backward_compatible.o 

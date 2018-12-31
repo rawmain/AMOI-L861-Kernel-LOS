@@ -1,0 +1,1 @@
+cmd_drivers/misc/mediatek/kernel/sched/built-in.o :=  /usr/src/android/ubertc/bin/aarch64-linux-android-ld -EL    -r -o drivers/misc/mediatek/kernel/sched/built-in.o drivers/misc/mediatek/kernel/sched/sched_avg.o drivers/misc/mediatek/kernel/sched/cputopo.o 

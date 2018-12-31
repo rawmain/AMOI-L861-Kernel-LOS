@@ -1,0 +1,1 @@
+cmd_drivers/misc/mediatek/lcm/amoi_r63419_wqhd_truly_phantom_2k_vdo_ok/built-in.o :=  /usr/src/android/ubertc/bin/aarch64-linux-android-ld -EL    -r -o drivers/misc/mediatek/lcm/amoi_r63419_wqhd_truly_phantom_2k_vdo_ok/built-in.o drivers/misc/mediatek/lcm/amoi_r63419_wqhd_truly_phantom_2k_vdo_ok/amoi_r63419_wqhd_truly_phantom_2k_vdo_ok.o 

@@ -1,0 +1,1 @@
+cmd_drivers/video/logo/logo_linux_mono.c := scripts/pnmtologo -t mono -n logo_linux_mono -o drivers/video/logo/logo_linux_mono.c /usr/src/android/AMOI-L861-Kernel/drivers/video/logo/logo_linux_mono.pbm

@@ -1,0 +1,1 @@
+cmd_drivers/misc/mediatek/mach/mt6795/L861_stonex/leds/mt65xx/built-in.o :=  /usr/src/android/ubertc/bin/aarch64-linux-android-ld -EL    -r -o drivers/misc/mediatek/mach/mt6795/L861_stonex/leds/mt65xx/built-in.o drivers/misc/mediatek/mach/mt6795/L861_stonex/leds/mt65xx/cust_leds.o 

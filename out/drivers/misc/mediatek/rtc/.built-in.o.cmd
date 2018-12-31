@@ -1,0 +1,1 @@
+cmd_drivers/misc/mediatek/rtc/built-in.o :=  /usr/src/android/ubertc/bin/aarch64-linux-android-ld -EL    -r -o drivers/misc/mediatek/rtc/built-in.o drivers/misc/mediatek/rtc/mtk_rtc_common.o drivers/misc/mediatek/rtc/mt6795/built-in.o 

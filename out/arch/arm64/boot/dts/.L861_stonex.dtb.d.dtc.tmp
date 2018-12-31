@@ -1,0 +1,1 @@
+arch/arm64/boot/dts/L861_stonex.dtb: arch/arm64/boot/dts/.L861_stonex.dtb.dts.tmp /usr/src/android/AMOI-L861-Kernel/arch/arm64/boot/dts/mt6795.dtsi /usr/src/android/AMOI-L861-Kernel/out/drivers/misc/mediatek/mach/mt6795/L861_stonex/dct/dct/cust_eint.dtsi

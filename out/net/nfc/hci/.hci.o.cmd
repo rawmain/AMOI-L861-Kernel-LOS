@@ -1,0 +1,1 @@
+cmd_net/nfc/hci/hci.o := /usr/src/android/ubertc/bin/aarch64-linux-android-ld -EL    -r -o net/nfc/hci/hci.o net/nfc/hci/core.o net/nfc/hci/hcp.o net/nfc/hci/command.o net/nfc/hci/llc.o net/nfc/hci/llc_nop.o 

@@ -1,0 +1,1 @@
+cmd_drivers/misc/mediatek/eccci/built-in.o :=  /usr/src/android/ubertc/bin/aarch64-linux-android-ld -EL    -r -o drivers/misc/mediatek/eccci/built-in.o drivers/misc/mediatek/eccci/ccci.o drivers/misc/mediatek/eccci/mt6795/built-in.o 

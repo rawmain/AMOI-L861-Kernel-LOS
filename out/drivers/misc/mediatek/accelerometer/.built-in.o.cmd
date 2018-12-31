@@ -1,0 +1,1 @@
+cmd_drivers/misc/mediatek/accelerometer/built-in.o :=  /usr/src/android/ubertc/bin/aarch64-linux-android-ld -EL    -r -o drivers/misc/mediatek/accelerometer/built-in.o drivers/misc/mediatek/accelerometer/accel.o drivers/misc/mediatek/accelerometer/accel_factory.o drivers/misc/mediatek/accelerometer/KXCJK1013/built-in.o 
