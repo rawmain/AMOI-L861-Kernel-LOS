@@ -1,1 +1,0 @@
-cmd_drivers/misc/mediatek/lastpc/built-in.o :=  /usr/src/android/ubertc/bin/aarch64-linux-android-ld -EL    -r -o drivers/misc/mediatek/lastpc/built-in.o drivers/misc/mediatek/lastpc/lastpc.o drivers/misc/mediatek/lastpc/mt6795/built-in.o 

@@ -1,1 +1,0 @@
-cmd_drivers/misc/mediatek/m4u/mt6795/built-in.o :=  /usr/src/android/ubertc/bin/aarch64-linux-android-ld -EL    -r -o drivers/misc/mediatek/m4u/mt6795/built-in.o drivers/misc/mediatek/m4u/mt6795/m4u.o drivers/misc/mediatek/m4u/mt6795/m4u_mva.o drivers/misc/mediatek/m4u/mt6795/m4u_pgtable.o drivers/misc/mediatek/m4u/mt6795/m4u_hw.o drivers/misc/mediatek/m4u/mt6795/m4u_debug.o 

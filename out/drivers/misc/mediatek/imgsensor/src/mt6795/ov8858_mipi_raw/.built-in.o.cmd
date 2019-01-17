@@ -1,1 +1,0 @@
-cmd_drivers/misc/mediatek/imgsensor/src/mt6795/ov8858_mipi_raw/built-in.o :=  /usr/src/android/ubertc/bin/aarch64-linux-android-ld -EL    -r -o drivers/misc/mediatek/imgsensor/src/mt6795/ov8858_mipi_raw/built-in.o drivers/misc/mediatek/imgsensor/src/mt6795/ov8858_mipi_raw/ov8858mipiraw_Sensor.o 

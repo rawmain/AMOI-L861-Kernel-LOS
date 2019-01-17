@@ -1,1 +1,0 @@
-cmd_drivers/misc/mediatek/imgsensor/src/mt6795/imx230_mipi_raw/built-in.o :=  /usr/src/android/ubertc/bin/aarch64-linux-android-ld -EL    -r -o drivers/misc/mediatek/imgsensor/src/mt6795/imx230_mipi_raw/built-in.o drivers/misc/mediatek/imgsensor/src/mt6795/imx230_mipi_raw/imx230mipi_Sensor.o drivers/misc/mediatek/imgsensor/src/mt6795/imx230_mipi_raw/imx230_eeprom.o 

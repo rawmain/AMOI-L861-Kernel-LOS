@@ -1,1 +1,0 @@
-cmd_sound/soc/mediatek/built-in.o :=  /usr/src/android/ubertc/bin/aarch64-linux-android-ld -EL    -r -o sound/soc/mediatek/built-in.o sound/soc/mediatek/common/built-in.o sound/soc/mediatek/mt_soc_audio_v1/built-in.o 

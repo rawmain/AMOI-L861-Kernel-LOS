@@ -1,1 +1,0 @@
-cmd_drivers/misc/mediatek/leds/built-in.o :=  /usr/src/android/ubertc/bin/aarch64-linux-android-ld -EL    -r -o drivers/misc/mediatek/leds/built-in.o drivers/misc/mediatek/leds/leds_drv.o drivers/misc/mediatek/leds/mt6795/built-in.o 

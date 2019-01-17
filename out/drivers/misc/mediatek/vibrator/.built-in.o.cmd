@@ -1,1 +1,0 @@
-cmd_drivers/misc/mediatek/vibrator/built-in.o :=  /usr/src/android/ubertc/bin/aarch64-linux-android-ld -EL    -r -o drivers/misc/mediatek/vibrator/built-in.o drivers/misc/mediatek/vibrator/vibrator_drv.o drivers/misc/mediatek/vibrator/mt6795/built-in.o 

@@ -1,1 +1,0 @@
-cmd_drivers/misc/mediatek/mjc/mt6795/built-in.o :=  /usr/src/android/ubertc/bin/aarch64-linux-android-ld -EL    -r -o drivers/misc/mediatek/mjc/mt6795/built-in.o drivers/misc/mediatek/mjc/mt6795/mjc_kernel_driver.o drivers/misc/mediatek/mjc/mt6795/mjc_kernel_compat_driver.o 

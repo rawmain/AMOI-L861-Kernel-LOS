@@ -1,1 +1,0 @@
-cmd_drivers/misc/mediatek/hwmon/hwmsen/built-in.o :=  /usr/src/android/ubertc/bin/aarch64-linux-android-ld -EL    -r -o drivers/misc/mediatek/hwmon/hwmsen/built-in.o drivers/misc/mediatek/hwmon/hwmsen/hwmsen_helper.o drivers/misc/mediatek/hwmon/hwmsen/hwmsen_dev.o 

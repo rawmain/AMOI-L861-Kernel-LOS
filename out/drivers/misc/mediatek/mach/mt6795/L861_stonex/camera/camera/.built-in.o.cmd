@@ -1,1 +1,0 @@
-cmd_drivers/misc/mediatek/mach/mt6795/L861_stonex/camera/camera/built-in.o :=  /usr/src/android/ubertc/bin/aarch64-linux-android-ld -EL    -r -o drivers/misc/mediatek/mach/mt6795/L861_stonex/camera/camera/built-in.o drivers/misc/mediatek/mach/mt6795/L861_stonex/camera/camera/dummyds.o drivers/misc/mediatek/mach/mt6795/L861_stonex/camera/camera/kd_camera_hw.o 

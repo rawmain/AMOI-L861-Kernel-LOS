@@ -1,1 +1,0 @@
-cmd_drivers/power/mediatek/built-in.o :=  /usr/src/android/ubertc/bin/aarch64-linux-android-ld -EL    -r -o drivers/power/mediatek/built-in.o drivers/power/mediatek/battery_meter_fg_20.o drivers/power/mediatek/battery_common_fg_20.o drivers/power/mediatek/switch_charging.o 
