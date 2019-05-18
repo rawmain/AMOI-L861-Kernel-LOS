@@ -216,7 +216,7 @@ endif
 #obj-$(CONFIG_MTK_CMMB) += cmmbdrv/
 obj-y	+= devapc/
 obj-y	+= devinfo/
-obj-y	+= gpu/
+obj-$(CONFIG_MTK_GPU_SUPPORT)	+= gpu/
 
 ifneq (,$(filter $(CONFIG_MTK_PLATFORM), "mt6582" "mt6592" "mt6595" "mt6752" "mt6795" "mt6735" "mt8127"  "mt8163"))
 obj-y	+= jpeg/

@@ -804,13 +804,37 @@ void ion_unmap_kernel(struct ion_client *client, struct ion_handle *handle)
 }
 EXPORT_SYMBOL(ion_unmap_kernel);
 
+static int ion_client_validate(struct ion_device *dev,
+				struct ion_client *client)
+{
+    struct rb_node *n;
+
+    for (n = rb_first(&dev->clients); n; n = rb_next(n)) {
+        struct ion_client * valid_client = rb_entry(n, struct ion_client, node);
+        if (client == valid_client) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+extern struct ion_device *g_ion_device;
 static int ion_debug_client_show(struct seq_file *s, void *unused)
 {
 	struct ion_client *client = s->private;
+        struct ion_device *dev = g_ion_device;
 	struct rb_node *n;
 	size_t sizes[ION_NUM_HEAP_IDS] = {0};
 	const char *names[ION_NUM_HEAP_IDS] = {NULL};
 	int i;
+
+	down_read(&dev->lock);
+        if (!ion_client_validate(dev, client)) {
+            pr_err("%s: client is invlaid.\n", __func__);
+            up_read(&dev->lock);
+            return -1;
+        }
 
         seq_printf(s, "%16.s %8.s %8.s %8.s %8.s %8.s\n", "heap_name","pid", "size", "handle_count","handle","buffer");
 
@@ -838,6 +862,9 @@ static int ion_debug_client_show(struct seq_file *s, void *unused)
 			continue;
 		seq_printf(s, "%16.16s: %16zu\n", names[i], sizes[i]);
 	}
+
+	up_read(&dev->lock);
+
 	return 0;
 }
 

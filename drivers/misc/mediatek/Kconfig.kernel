@@ -75,6 +75,7 @@ config MTK_AEE_AED
 
 config MTK_AEE_IPANIC
 	tristate "Enable AEE Kernel Panic Dump"
+	select ANDROID_LOGGER
 	default y
 
 config MTK_AEE_POWERKEY_HANG_DETECT

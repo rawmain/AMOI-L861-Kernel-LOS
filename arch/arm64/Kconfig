@@ -23,6 +23,8 @@ config ARM64
 	select HARDIRQS_SW_RESEND
 	select HAVE_ARCH_JUMP_LABEL
 	select HAVE_ARCH_AUDITSYSCALL
+	select HAVE_ARCH_MMAP_RND_BITS
+	select HAVE_ARCH_MMAP_RND_COMPAT_BITS if COMPAT
 	select HAVE_ARCH_SECCOMP_FILTER
 	select HAVE_ARCH_KGDB
 	select HAVE_ARCH_TRACEHOOK
@@ -70,6 +72,27 @@ config MMU
 
 config NO_IOPORT
 	def_bool y
+
+config ILLEGAL_POINTER_VALUE
+	hex
+	default 0xdead000000000000
+
+config ARCH_MMAP_RND_BITS_MIN
+       default 14 if ARM64_64K_PAGES
+       default 18
+
+# max bits determined by the following formula:
+#  VA_BITS - PAGE_SHIFT - 3
+#  VA_BITS is always 39
+config ARCH_MMAP_RND_BITS_MAX
+       default 20 if ARM64_64K_PAGES
+       default 24
+
+config ARCH_MMAP_RND_COMPAT_BITS_MIN
+       default 11
+
+config ARCH_MMAP_RND_COMPAT_BITS_MAX
+       default 16
 
 config STACKTRACE_SUPPORT
 	def_bool y
@@ -137,24 +160,24 @@ config ARM_ERRATA_824069
 	  incorrectly marked as dirty. This workaround replaces all cache clean opeartion
 	  to clean & invalidate.
 
-config ARM64_ERRATUM_845719
-	bool "Cortex-A53: 845719: a load might read incorrect data"
-	depends on COMPAT
-	default y
-	help
-	  This option enables the workaround for erratum 845719.
-	  When running a compat (AArch32) userspace on an affected Cortex-A53
-	  part, a load at EL0 from a virtual address that matches the bottom 32
-	  bits of the virtual address used by a recent load at (AArch64) EL1
-	  might return incorrect data.
+config ARM_ERRATA_845719
+        bool "Cortex-A53: 845719: a load might read incorrect data"
+        depends on COMPAT
+        default y
+        help
+          This option enables the workaround for erratum 845719.
+          When running a compat (AArch32) userspace on an affected Cortex-A53
+          part, a load at EL0 from a virtual address that matches the bottom 32
+          bits of the virtual address used by a recent load at (AArch64) EL1
+          might return incorrect data.
 
-	  The workaround is to write the contextidr_el1 register on exception
-	  return to a 32-bit task.
-	  Please note that this does not necessarily enable the workaround,
-	  as it depends on the alternative framework, which will only patch
-	  the kernel if an affected CPU is detected.
+          The workaround is to write the contextidr_el1 register on exception
+          return to a 32-bit task.
+          Please note that this does not necessarily enable the workaround,
+          as it depends on the alternative framework, which will only patch
+          the kernel if an affected CPU is detected.
 
-	  If unsure, say Y.
+          If unsure, say Y.
 
 config KERNEL_MODE_NEON
 	def_bool y
@@ -192,6 +215,7 @@ config ARCH_MT6735
 	select MTK_EIC
 	select ARMV7_COMPAT
         select ARMV7_COMPAT_CPUINFO
+	select CPU_IDLE if !MTK_LEGACY
 	help
 	  This enable support for MediaTek MT6735
 
@@ -212,6 +236,7 @@ config ARCH_MT6735M
 	select MTK_EIC
 	select ARMV7_COMPAT
         select ARMV7_COMPAT_CPUINFO
+	select CPU_IDLE if !MTK_LEGACY
 	help
 	  This enable support for MediaTek MT6735M
 
@@ -232,6 +257,7 @@ config ARCH_MT6753
 	select MTK_EIC
 	select ARMV7_COMPAT
         select ARMV7_COMPAT_CPUINFO
+	select CPU_IDLE if !MTK_LEGACY
 	help
 	  This enable support for MediaTek MT6753
 
@@ -255,7 +281,7 @@ config ARCH_MT6752
 	select ARMV7_COMPAT
         select ARMV7_COMPAT_CPUINFO
 	select ARM_ERRATA_824069
-	select ARM64_ERRATUM_845719
+	select MTK_SYS_CIRQ
 	help
 	  This enable support for MediaTek MT6752
 
@@ -306,7 +332,9 @@ config ARCH_MT6795
         select ARMV7_COMPAT_CPUINFO
         select MD32_SUPPORT
 	select ARM_ERRATA_824069
-	select ARM64_ERRATUM_845719
+	select ARM_ERRATA_845719
+	select MTK_LM_MODE
+	select MTK_USB2JTAG_SUPPORT
 	help
 	  This enable support for MediaTek MT6795
 endmenu
@@ -588,7 +616,7 @@ config ARCH_HAS_HOLES_MEMORYMODEL
 	def_bool y if SPARSEMEM
 
 config ARCH_SPARSEMEM_ENABLE
-	def_bool y if !MTK_GMO_RAM_OPTIMIZE
+	def_bool y
 	select SPARSEMEM_VMEMMAP_ENABLE
 
 config ARCH_SPARSEMEM_DEFAULT

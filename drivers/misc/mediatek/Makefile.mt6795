@@ -98,9 +98,9 @@ obj-$(CONFIG_MTK_XHCI)   +=  xhci/
 
 
 
-obj-y   += dispsys/
+#obj-y   += dispsys/
 obj-y   += sync/
-obj-y   += videox/
+obj-$(CONFIG_MTK_FB) += video/
 obj-y   += mtprof/
 obj-y   += rtc/
 obj-y   += xlog/

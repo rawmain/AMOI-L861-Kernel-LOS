@@ -140,13 +140,13 @@
 	msr	spsr_el1, x22
 	.if	\el == 0
 	msr	sp_el0, x23
-#ifdef CONFIG_ARM64_ERRATUM_845719
-	tbz 	x22, #4, 1f
+#ifdef ARM_ERRATA_845719
+	tbz     x22, #4, 1f
 #ifdef CONFIG_PID_IN_CONTEXTIDR
-	mrs	x29, contextidr_el1
-	msr	contextidr_el1, x29
+	mrs     x29, contextidr_el1
+	msr     contextidr_el1, x29
 #else
-	msr	contextidr_el1, xzr
+	msr     contextidr_el1, xzr
 #endif
 1:
 #endif
@@ -185,7 +185,7 @@
 	ldp	x10, x11, [sp], #16
 	ldp	x12, x13, [sp], #16
 	ldp	x14, x15, [sp], #16
-	tbnz 	x22, #4, 1f 
+	tbnz 	x22, #4, 1f
 
 	ldp	x16, x17, [sp], #16
 	ldp	x18, x19, [sp], #16
@@ -199,7 +199,7 @@
 	// could not run here
 
 1:
-#ifdef CONFIG_ARM64_ERRATUM_845719
+#ifdef ARM_ERRATA_845719
 #ifdef CONFIG_PID_IN_CONTEXTIDR
 	mrs     x29, contextidr_el1
 	msr     contextidr_el1, x29

@@ -235,11 +235,20 @@ static ssize_t msg_copy_to_user(const char *prefix, const char *msg, char __user
 {
 	ssize_t ret = 0;
 	int len;
+    char *msg_tmp;
 
 	msg_show(prefix, (AE_Msg *) msg);
 
 	if (msg == NULL)
 		return 0;
+    msg_tmp = kzalloc(count, GFP_KERNEL);
+    if (msg_tmp != NULL) {
+        memcpy(msg_tmp, msg, count);
+    }
+    else {
+        LOGE("%s : kzalloc() fail!\n", __func__);
+        msg_tmp = msg;
+    }
 
 	len = ((AE_Msg *) msg)->len + sizeof(AE_Msg);
 
@@ -263,6 +272,8 @@ static ssize_t msg_copy_to_user(const char *prefix, const char *msg, char __user
 	*f_pos += count;
 	ret = count;
  out:
+    if (msg_tmp != msg)
+        kfree(msg_tmp);
 	return ret;
 }
 
@@ -851,6 +862,13 @@ static int ee_log_avail(void)
 	return (aed_dev.eerec != NULL);
 }
 
+static char* ee_msg_avail(void)
+{
+    if (aed_dev.eerec)
+        return aed_dev.eerec->msg;
+	return NULL;
+}
+
 static void ee_gen_ind_msg(struct aed_eerec *eerec)
 {
 	unsigned long flags = 0;
@@ -882,7 +900,7 @@ static void ee_gen_ind_msg(struct aed_eerec *eerec)
 		return;
 
 	rep_msg->cmdType = AE_IND;
-	rep_msg->cmdId = AE_IND_EXP_RAISED;
+	rep_msg->cmdId = AE_IND_FATAL_RAISED;	// LETV enhancement: enable ee in user load
 	rep_msg->arg = AE_EE;
 	rep_msg->len = 0;
 	rep_msg->dbOption = eerec->db_opt;
@@ -941,7 +959,7 @@ static int aed_ee_release(struct inode *inode, struct file *filp)
 static unsigned int aed_ee_poll(struct file *file, struct poll_table_struct *ptable)
 {
 	/* LOGD("%s\n", __func__); */
-	if (ee_log_avail()) {
+	if (ee_log_avail() && ee_msg_avail()) {
 		return POLLIN | POLLRDNORM | POLLOUT | POLLWRNORM;
 	} else {
 		poll_wait(file, &aed_dev.eewait, ptable);
@@ -1817,8 +1835,12 @@ static void external_exception(const char *assert_type, const int *log, int log_
 
 	LOGD("%s : [%s] log ptr %p size %d, phy ptr %p size %d\n", __func__,
 	     assert_type, log, log_size, phy, phy_size);
+
+    /* LETV enhancement: enable ee in user load
 	if (aee_mode >= AEE_MODE_CUSTOMER_USER)
 		return;
+    */
+
 	eerec = kzalloc(sizeof(struct aed_eerec), GFP_ATOMIC);
 	if (eerec == NULL) {
 		LOGE("%s: kmalloc fail", __func__);

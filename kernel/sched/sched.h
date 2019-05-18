@@ -17,8 +17,9 @@ extern __read_mostly int scheduler_running;
  * to static priority [ MAX_RT_PRIO..MAX_PRIO-1 ],
  * and back.
  */
-#define NICE_TO_PRIO(nice)	(MAX_RT_PRIO + (nice) + 20)
-#define PRIO_TO_NICE(prio)	((prio) - MAX_RT_PRIO - 20)
+
+//#define NICE_TO_PRIO(nice)	(MAX_RT_PRIO + (nice) + 20)
+//#define PRIO_TO_NICE(prio)	((prio) - MAX_RT_PRIO - 20)
 #define TASK_NICE(p)		PRIO_TO_NICE((p)->static_prio)
 
 extern unsigned long get_cpu_load(int cpu);
@@ -457,6 +458,7 @@ struct rq {
 	struct sched_domain *sd;
 
 	unsigned long cpu_power;
+	unsigned long cpu_power_orig;
 
 	unsigned char idle_balance;
 	/* For active balancing */
@@ -866,7 +868,7 @@ static inline void finish_lock_switch(struct rq *rq, struct task_struct *prev)
 	 */
 	spin_acquire(&rq->lock.dep_map, 0, 0, _THIS_IP_);
 #ifdef CONFIG_MT_RT_SCHED
-	if(test_tsk_need_released(prev)){
+	if (test_tsk_need_released(prev)) {
 		clear_tsk_need_released(prev);
 		push_need_released_rt_task(rq, prev);
 	}
@@ -1425,3 +1427,15 @@ static inline int rq_cpu(const struct rq *rq) { return rq->cpu; }
 static inline int rq_cpu(const struct rq *rq) { return 0; }
 #endif
 
+static inline void account_reset_rq(struct rq *rq)
+{
+#ifdef CONFIG_IRQ_TIME_ACCOUNTING
+	rq->prev_irq_time = 0;
+#endif
+#ifdef CONFIG_PARAVIRT
+	rq->prev_steal_time = 0;
+#endif
+#ifdef CONFIG_PARAVIRT_TIME_ACCOUNTING
+	rq->prev_steal_time_rq = 0;
+#endif
+}

@@ -3853,7 +3853,7 @@ static int battery_meter_suspend(struct platform_device *dev, pm_message_t state
 
 #if defined(SOC_BY_HW_FG)
 #ifdef MTK_ENABLE_AGING_ALGORITHM
-extern void mt_power_off(void);
+/* disabled by TRONX2100 extern void mt_power_off(void); */
 static void battery_aging_check(void)
 {
 	kal_int32 hw_ocv_after_sleep;
@@ -3873,9 +3873,10 @@ static void battery_aging_check(void)
 	bm_print(BM_LOG_CRTI, "@@@ HW_OCV_D3=%d, HW_OCV_D1=%d, VBAT=%d\n", hw_ocv_after_sleep, g_hw_ocv_before_sleep, vbat);
 
     //amoi lincg @20150504 begin  
+    /* disabled by TRONX2100 to prevent turn off device at 20 percent...
     if (vbat <= 3400) {        
-        mt_power_off();
-    }
+       mt_power_off();
+    } */
     //amoi lincg@20150504 end
 	// gauge correct
 	battery_meter_ctrl(BATTERY_METER_CMD_GET_HW_FG_CAR, &columb_after_sleep); //update columb counter to get DOD_now.

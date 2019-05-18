@@ -42,6 +42,10 @@
 #include <asm/tlb.h>
 #include <asm/mmu_context.h>
 
+#ifdef CONFIG_MTK_EXTMEM
+#include <linux/exm_driver.h>
+#endif
+
 #include "internal.h"
 
 #ifndef arch_mmap_check
@@ -51,6 +55,18 @@
 #ifndef arch_rebalance_pgtables
 #define arch_rebalance_pgtables(addr, len)		(addr)
 #endif
+
+#ifdef CONFIG_HAVE_ARCH_MMAP_RND_BITS
+const int mmap_rnd_bits_min = CONFIG_ARCH_MMAP_RND_BITS_MIN;
+const int mmap_rnd_bits_max = CONFIG_ARCH_MMAP_RND_BITS_MAX;
+int mmap_rnd_bits __read_mostly = CONFIG_ARCH_MMAP_RND_BITS;
+#endif
+#ifdef CONFIG_HAVE_ARCH_MMAP_RND_COMPAT_BITS
+const int mmap_rnd_compat_bits_min = CONFIG_ARCH_MMAP_RND_COMPAT_BITS_MIN;
+const int mmap_rnd_compat_bits_max = CONFIG_ARCH_MMAP_RND_COMPAT_BITS_MAX;
+int mmap_rnd_compat_bits __read_mostly = CONFIG_ARCH_MMAP_RND_COMPAT_BITS;
+#endif
+
 
 static void unmap_region(struct mm_struct *mm,
 		struct vm_area_struct *vma, struct vm_area_struct *prev,
@@ -213,8 +229,9 @@ static void __remove_shared_vm_struct(struct vm_area_struct *vma,
 	if (vma->vm_flags & VM_DENYWRITE)
 		atomic_inc(&file_inode(file)->i_writecount);
 	if (vma->vm_flags & VM_SHARED)
-		mapping->i_mmap_writable--;
-
+		//mapping->i_mmap_writable--;
+        mapping_unmap_writable(mapping);
+        
 	flush_dcache_mmap_lock(mapping);
 	if (unlikely(vma->vm_flags & VM_NONLINEAR))
 		list_del_init(&vma->shared.nonlinear);
@@ -628,8 +645,8 @@ static void __vma_link_file(struct vm_area_struct *vma)
 		if (vma->vm_flags & VM_DENYWRITE)
 			atomic_dec(&file_inode(file)->i_writecount);
 		if (vma->vm_flags & VM_SHARED)
-			mapping->i_mmap_writable++;
-
+			//mapping->i_mmap_writable++;
+			atomic_inc(&mapping->i_mmap_writable);
 		flush_dcache_mmap_lock(mapping);
 		if (unlikely(vma->vm_flags & VM_NONLINEAR))
 			vma_nonlinear_insert(vma, &mapping->i_mmap_nonlinear);
@@ -2523,13 +2540,6 @@ int split_vma(struct mm_struct *mm, struct vm_area_struct *vma,
  * work.  This now handles partial unmappings.
  * Jeremy Fitzhardinge <jeremy@goop.org>
  */
-#ifdef CONFIG_MTK_EXTMEM
-extern bool extmem_in_mspace(struct vm_area_struct *vma);
-extern void * get_virt_from_mspace(void * pa);
-extern size_t extmem_get_mem_size(unsigned long pgoff);
-extern void extmem_free(void* mem);
-#endif
-
 int do_munmap(struct mm_struct *mm, unsigned long start, size_t len)
 {
 	unsigned long end;
@@ -2546,31 +2556,13 @@ int do_munmap(struct mm_struct *mm, unsigned long start, size_t len)
 	if (!vma)
 		return 0;
 
-#ifdef CONFIG_MT_ENG_BUILD
-//	if (strstr(current->comm, "app_process")){
-	{
-		struct file *file;
-		file=vma->vm_file;
-		if (file) {
-			const char *name=file->f_path.dentry->d_iname;
-			if(name && (strstr(name,".so") || strstr(name,".oat") || strstr(name,".art") || strstr(name,".dex") || strstr(name,".apk")))
-				//pr_debug("unmap:%s 0x%lx - 0x%lx\n", name, vma->vm_start, vma->vm_end);
-				printk(KERN_DEBUG "unmap:%s 0x%lx - 0x%lx\n", name, vma->vm_start, vma->vm_end);
-		} else {
-			const char *name = arch_vma_name(vma);
-			if(name)
-				printk(KERN_DEBUG "unmap arch_vma_name:%s 0x%lx - 0x%lx\n", name, vma->vm_start, vma->vm_end);
-		}
-	}
-#endif
-
 	prev = vma->vm_prev;
 	/* we have  start < vma->vm_end  */
 
 #ifdef CONFIG_MTK_EXTMEM
 	/* get correct mmap size if in mspace. */
-    if (extmem_in_mspace(vma))
-        len = extmem_get_mem_size(vma->vm_pgoff);
+	if (extmem_in_mspace(vma))
+		len = extmem_get_mem_size(vma->vm_pgoff);
 #endif
 
 	/* if it doesn't overlap, we have nothing.. */

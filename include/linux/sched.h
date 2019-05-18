@@ -3,6 +3,7 @@
 
 #include <uapi/linux/sched.h>
 
+#include <linux/sched/prio.h>
 
 struct sched_param {
 	int sched_priority;
@@ -1077,8 +1078,10 @@ struct sched_entity {
 	/* Per-entity load-tracking */
 	struct sched_avg	avg;
 #endif
-#ifdef CONFIG_MTPROF_CPUTIME
+#if defined(CONFIG_MTPROF_CPUTIME) || defined(CONFIG_MT_RT_THROTTLE_MON)
 	u64			mtk_isr_time;
+#endif
+#ifdef CONFIG_MTPROF_CPUTIME
 	int			mtk_isr_count;
 	struct mtk_isr_info  *mtk_isr;
 #endif
@@ -1127,10 +1130,10 @@ struct thread_group_info_t {
   #ifdef CONFIG_MT_SCHED_DEBUG
 #define mt_sched_printf(event,x...) \
  do{                    \
-        char strings[128]="";  \
-        snprintf(strings, 128, x); \
-        printk(KERN_NOTICE x);          \
-        trace_##event(strings); \
+	char strings[128] = "";  \
+	snprintf(strings, 128, x); \
+	pr_warn(x);          \
+	trace_##event(strings); \
  }while (0)
   #else
 #define mt_sched_printf(event,x...) \
@@ -1282,7 +1285,7 @@ struct task_struct {
 
 	cputime_t utime, stime, utimescaled, stimescaled;
 	cputime_t gtime;
-	unsigned long long cpu_power;
+    unsigned long long cpu_power;
 #ifndef CONFIG_VIRT_CPU_ACCOUNTING_NATIVE
 	struct cputime prev_cputime;
 #endif
@@ -1546,6 +1549,10 @@ struct task_struct {
 	unsigned int	sequential_io;
 	unsigned int	sequential_io_avg;
 #endif
+#ifdef CONFIG_PREEMPT_MONITOR
+	unsigned long preempt_dur;
+#endif
+
 };
 
 /* Future-safe accessor for struct task_struct's cpus_allowed. */
@@ -2050,14 +2057,6 @@ extern int sched_setscheduler(struct task_struct *, int,
 			      const struct sched_param *);
 extern int sched_setscheduler_nocheck(struct task_struct *, int,
 				      const struct sched_param *);
-
-#ifdef CONFIG_MT_PRIO_TRACER
-extern void set_user_nice_core(struct task_struct *p, long nice);
-extern int sched_setscheduler_core(struct task_struct *, int,
-				   const struct sched_param *);
-extern int sched_setscheduler_nocheck_core(struct task_struct *, int,
-					   const struct sched_param *);
-#endif
 
 extern struct task_struct *idle_task(int cpu);
 /**
@@ -2836,6 +2835,11 @@ static inline void inc_syscw(struct task_struct *tsk)
 {
 	tsk->ioac.syscw++;
 }
+
+static inline void inc_syscfs(struct task_struct *tsk)
+{
+	tsk->ioac.syscfs++;
+}
 #else
 static inline void add_rchar(struct task_struct *tsk, ssize_t amt)
 {
@@ -2850,6 +2854,9 @@ static inline void inc_syscr(struct task_struct *tsk)
 }
 
 static inline void inc_syscw(struct task_struct *tsk)
+{
+}
+static inline void inc_syscfs(struct task_struct *tsk)
 {
 }
 #endif

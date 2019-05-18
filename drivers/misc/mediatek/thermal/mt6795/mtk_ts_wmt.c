@@ -1,6 +1,5 @@
 #include <linux/version.h>
 #include <linux/thermal.h>
-#include <linux/xlog.h>
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
 #include <asm/uaccess.h>
@@ -18,18 +17,18 @@ static int wmt_tm_debug_log = 0;
 #define wmt_tm_dprintk(fmt, args...)   \
 do {                                    \
     if (wmt_tm_debug_log) {                \
-        xlog_printk(ANDROID_LOG_DEBUG, "Power/WMT_Thermal", fmt, ##args); \
+        pr_notice("Power/WMT_Thermal" fmt, ##args); \
     }                                   \
 } while(0)
 
 #define wmt_tm_printk(fmt, args...)   \
 do {                                    \
-    xlog_printk(ANDROID_LOG_DEBUG, "Power/WMT_Thermal", fmt, ##args); \
+    pr_notice("Power/WMT_Thermal" fmt, ##args); \
 } while(0)
 
 #define wmt_tm_info(fmt, args...)   \
 do {                                    \
-    xlog_printk(ANDROID_LOG_INFO, "Power/WMT_Thermal", fmt, ##args); \
+    pr_notice("Power/WMT_Thermal" fmt, ##args); \
 } while(0)
 
 struct linux_thermal_ctrl_if {
@@ -487,7 +486,7 @@ static int wmt_cl_get_max_state(struct thermal_cooling_device *cool_dev,
              unsigned long *pv)
 {
     *pv = 1;
-    wmt_tm_dprintk("[%s] %d\n", __func__, *pv);
+    wmt_tm_dprintk("[%s] %lu\n", __func__, *pv);
 	return 0;
 }
 
@@ -495,14 +494,14 @@ static int wmt_cl_get_cur_state(struct thermal_cooling_device *cool_dev,
              unsigned long *pv)
 {
     *pv = cl_dev_state;
-    wmt_tm_dprintk("[%s] %d\n", __func__, *pv);
+    wmt_tm_dprintk("[%s] %lu\n", __func__, *pv);
 	return 0;
 }
 
 static int wmt_cl_set_cur_state(struct thermal_cooling_device *cool_dev,
              unsigned long v)
 {
-    wmt_tm_dprintk("[%s] %d\n", __func__, v);
+    wmt_tm_dprintk("[%s] %lu\n", __func__, v);
     cl_dev_state = v;
 
     if (cl_dev_state == 1) {
@@ -639,7 +638,7 @@ static int wmt_judge_throttling(int index, int is_on, int interval)
 						over_up_time = 0;
 					}
 				} else {
-					wmt_tm_info("[%s] Error state1!!\n", __func__, throttling_pre_stat);
+					wmt_tm_info("[%s] Error state1=%d!!\n", __func__, throttling_pre_stat);
 				}
 				wmt_tm_printk("case2 time=%d\n", over_up_time);
 			break;
@@ -732,7 +731,7 @@ static int wmt_cl_pa1_get_max_state(struct thermal_cooling_device *cool_dev,
              unsigned long *pv)
 {
     *pv = 1;
-    wmt_tm_dprintk("[%s] %d\n", __func__, *pv);
+    wmt_tm_dprintk("[%s] %lu\n", __func__, *pv);
     return 0;
 }
 
@@ -740,7 +739,7 @@ static int wmt_cl_pa1_get_cur_state(struct thermal_cooling_device *cool_dev,
              unsigned long *pv)
 {
     *pv = cl_pa1_dev_state;
-    wmt_tm_dprintk("[%s] %d\n", __func__, *pv);
+    wmt_tm_dprintk("[%s] %lu\n", __func__, *pv);
     return 0;
 }
 
@@ -750,7 +749,7 @@ static int wmt_cl_pa1_set_cur_state(struct thermal_cooling_device *cool_dev,
 	struct linux_thermal_ctrl_if *p_linux_if = 0;
 	int ret = 0;
 
-	wmt_tm_dprintk("[%s] %d\n", __func__, v);
+	wmt_tm_dprintk("[%s] %lu\n", __func__, v);
 
 	if (pg_wmt_tm) {
 		p_linux_if = &pg_wmt_tm->linux_if;
@@ -775,7 +774,7 @@ static int wmt_cl_pa2_get_max_state(struct thermal_cooling_device *cool_dev,
              unsigned long *pv)
 {
     *pv = 1;
-    wmt_tm_dprintk("[%s] %d\n", __func__, *pv);
+    wmt_tm_dprintk("[%s] %lu\n", __func__, *pv);
     return 0;
 }
 
@@ -783,7 +782,7 @@ static int wmt_cl_pa2_get_cur_state(struct thermal_cooling_device *cool_dev,
              unsigned long *pv)
 {
     *pv = cl_pa2_dev_state;
-    wmt_tm_dprintk("[%s] %d\n", __func__, *pv);
+    wmt_tm_dprintk("[%s] %lu\n", __func__, *pv);
     return 0;
 }
 
@@ -793,7 +792,7 @@ static int wmt_cl_pa2_set_cur_state(struct thermal_cooling_device *cool_dev,
 	struct linux_thermal_ctrl_if *p_linux_if = 0;
 	int ret = 0;
 
-	wmt_tm_dprintk("[%s] %d\n", __func__, v);
+	wmt_tm_dprintk("[%s] %lu\n", __func__, v);
 
 	if (pg_wmt_tm) {
 		p_linux_if = &pg_wmt_tm->linux_if;
@@ -966,6 +965,7 @@ ssize_t wmt_tm_wfd_write(struct file *filp, const char __user *buf, size_t len, 
 	int ret = 0;
 	char tmp[MAX_LEN] = {0};
 
+	len = (len < (MAX_LEN-1)) ? len : (MAX_LEN-1);
 	/* write data to the buffer */
 	if (copy_from_user(tmp, buf, len)) {
 		return -EFAULT;
@@ -973,7 +973,8 @@ ssize_t wmt_tm_wfd_write(struct file *filp, const char __user *buf, size_t len, 
 
 	ret = sscanf(tmp, "%d", &tm_wfd_stat);
 
-	wmt_tm_printk("[%s] %s = %d, len=%d, ret=%d\n", __func__, tmp, tm_wfd_stat, len, ret);
+	//Have a risk to open it, because the size_t is differnet size in 32 and 64bits
+	//wmt_tm_printk("[%s] %s = %d, len=%d, ret=%d\n", __func__, tmp, tm_wfd_stat, len, ret);
 
 	return len;
 }
@@ -1008,6 +1009,7 @@ ssize_t wmt_tm_pid_write(struct file *filp, const char __user *buf, size_t len, 
 	int ret = 0;
 	char tmp[MAX_LEN] = {0};
 
+	len = (len < (MAX_LEN-1)) ? len : (MAX_LEN-1);
 	/* write data to the buffer */
 	if ( copy_from_user(tmp, buf, len) ) {
 		return -EFAULT;

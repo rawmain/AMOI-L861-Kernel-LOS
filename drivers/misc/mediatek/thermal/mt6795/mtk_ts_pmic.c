@@ -6,7 +6,6 @@
 #include <linux/thermal.h>
 #include <linux/platform_device.h>
 #include <linux/aee.h>
-#include <linux/xlog.h>
 #include <linux/types.h>
 #include <linux/delay.h>
 #include <linux/proc_fs.h>
@@ -66,7 +65,7 @@ static int polling_factor2 = 10000;
 #define mtktspmic_dprintk(fmt, args...)   \
 do {									\
 	if (mtktspmic_debug_log) {				\
-		xlog_printk(ANDROID_LOG_INFO, "Power/PMIC_Thermal", fmt, ##args); \
+		pr_notice("Power/PMIC_Thermal" fmt, ##args); \
 	}								   \
 } while(0)
 
@@ -139,7 +138,7 @@ void mtktspmic_read_6331_efuse(void)
     ret=pmic_config_interface(0x0616, 0x1, 0x1, 0);
 /*
     //dump
-    xlog_printk(ANDROID_LOG_INFO, "Power/PMIC", "Reg[0x%x]=0x%x,Reg[0x%x]=0x%x,Reg[0x%x]=0x%x\n",
+    mtktspmic_dprintk("Reg[0x%x]=0x%x,Reg[0x%x]=0x%x,Reg[0x%x]=0x%x\n",
         0x0154,upmu_get_reg_value(0x0154),
         0x0148,upmu_get_reg_value(0x0148),
         0x0616,upmu_get_reg_value(0x0616)
@@ -172,7 +171,7 @@ void mtktspmic_read_6331_efuse(void)
         efusevalue[j] = upmu_get_reg_value(0x0618);
         printk("6331_efuse : efusevalue[%d]=0x%x\n",j, efusevalue[j]);
 /*
-        xlog_printk(ANDROID_LOG_INFO, "Power/PMIC", "i=0x%x,Reg[0x%x]=0x%x,Reg[0x%x]=0x%x,Reg[0x%x]=0x%x\n",
+        mtktspmic_dprintk("i=0x%x,Reg[0x%x]=0x%x,Reg[0x%x]=0x%x,Reg[0x%x]=0x%x\n",
             i,
             0x0600,upmu_get_reg_value(0x0600),
             0x061A,upmu_get_reg_value(0x061A),
@@ -188,7 +187,7 @@ void mtktspmic_read_6331_efuse(void)
     ret=pmic_config_interface(0x0152, 0x0010, 0xFFFF, 0); // new add
     //dump
 /*
-    xlog_printk(ANDROID_LOG_INFO, "Power/PMIC", "Reg[0x%x]=0x%x\n",
+    mtktspmic_dprintk("Reg[0x%x]=0x%x\n",
         0x0144,upmu_get_reg_value(0x0144)
         );
 */
